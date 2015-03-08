@@ -27,6 +27,7 @@ public class MySQLAccess {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
+			logger.debug("Loading MySQL Driver class ....");
 		} catch (ClassNotFoundException e) {
 			logger.error("MySQL Driver class not found", e);
 		}

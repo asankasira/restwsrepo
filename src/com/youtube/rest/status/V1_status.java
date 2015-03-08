@@ -65,6 +65,6 @@ public class V1_status {
 		
 		sb.append("</ul>");
 		
-		return Response.status(200).entity(sb.toString()).build();
+		return Response.ok(sb.toString()).build();
 	}
 }

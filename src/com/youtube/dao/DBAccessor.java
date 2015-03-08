@@ -11,8 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
+
+import com.youtube.util.JSONUtil;
 
 /**
+ * This utility class will convert database table to a JSON array.
+ * 
  * @author Asanka Siriwardena
  *
  */
@@ -59,5 +64,27 @@ public class DBAccessor {
 		}
 		
 		return emplist;
+	}
+	
+	public JSONArray getAllCustomers() throws SQLException  {
+				
+		String sql = "select * from customers";	
+		JSONArray arr = new JSONArray();
+
+	    //try with jdbc resources	
+		try (Connection conn =  MySQLAccess.getConnection();
+				PreparedStatement pst = conn.prepareStatement(sql)){
+			
+			//set prepared statement parameters if required..
+			
+			try(ResultSet rs = pst.executeQuery()){  //nested try for ResultSet
+				arr = new JSONUtil().toJSONArray(rs);
+			}
+			
+		}
+		
+		/** catch clause is omitted as this throws SQLException */
+		
+		return arr;
 	}
 }
