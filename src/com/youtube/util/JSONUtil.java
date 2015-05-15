@@ -43,6 +43,11 @@ public class JSONUtil {
 							log.debug("INTEGER ---> to JSON");
 						}
 						
+						if(rsmeta.getColumnType(i) == Types.DOUBLE){
+							object.put(column_name, rs.getDouble(column_name));
+							log.debug("DOUBLE ---> to JSON");
+						}
+						
 						if(rsmeta.getColumnType(i) == Types.DATE){
 							object.put(column_name, rs.getDate(column_name));
 							log.debug("DATE ---> to JSON");

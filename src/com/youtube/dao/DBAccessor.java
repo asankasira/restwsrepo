@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
 
+import com.youtube.dao.custom.ContactInfoDTO;
 import com.youtube.util.JSONUtil;
 
 /**
@@ -34,7 +35,7 @@ public class DBAccessor {
 		
 		try {
 						
-			conn = MySQLAccess.getConnection();
+			conn = MySQLAccess.getTestConnection();
 			logger.info("<-------------  Inside DB getEmployee method ----------> ");
 			
 			pst = conn.prepareStatement(sql);		
@@ -72,7 +73,7 @@ public class DBAccessor {
 		JSONArray arr = new JSONArray();
 
 	    //try with jdbc resources	
-		try (Connection conn =  MySQLAccess.getConnection();
+		try (Connection conn =  MySQLAccess.getTestConnection();
 				PreparedStatement pst = conn.prepareStatement(sql)){
 			
 			//set prepared statement parameters if required..
@@ -87,4 +88,108 @@ public class DBAccessor {
 		
 		return arr;
 	}
+	
+	public JSONArray queryAllEmployees() throws SQLException  {
+		
+		String sql = "select name, salary, city, region from employee";	
+		JSONArray arr = new JSONArray();
+
+	    //try with jdbc resources	
+		try (Connection conn =  MySQLAccess.getTestConnection();
+				PreparedStatement pst = conn.prepareStatement(sql)){
+			
+			//set prepared statement parameters if required..
+			
+			try(ResultSet rs = pst.executeQuery()){  //nested try for ResultSet
+				arr = new JSONUtil().toJSONArray(rs);
+			}
+			
+		}
+		
+		/** catch clause is omitted as this throws SQLException */
+		
+		return arr;
+	}
+	
+	public JSONArray queryPaymentsOnCustomer(Integer customerNumber) throws SQLException  {
+		
+		String sql = "select checknumber, paymentdate, amount from payments where customerNumber = ?";	
+		JSONArray arr = new JSONArray();
+
+	    //try with jdbc resources	
+		try (Connection conn =  MySQLAccess.getClassicModelConnection();
+				PreparedStatement pst = conn.prepareStatement(sql)){
+			
+			pst.setInt(1, customerNumber);
+			
+			try(ResultSet rs = pst.executeQuery()){  //nested try for ResultSet
+				arr = new JSONUtil().toJSONArray(rs);
+			}
+			
+		}
+		
+		return arr;
+	}
+	
+    public JSONArray queryOrderDetailWithOrderNo(Integer orderNo) throws SQLException  {
+		
+		String sql = "select productcode, quantityordered, priceeach from orderdetails where orderNumber = ?";	
+		JSONArray arr = new JSONArray();
+
+	    //try with jdbc resources	
+		try (Connection conn =  MySQLAccess.getClassicModelConnection();
+				PreparedStatement pst = conn.prepareStatement(sql)){
+			
+			pst.setInt(1, orderNo);
+			
+			try(ResultSet rs = pst.executeQuery()){  //nested try for ResultSet
+				arr = new JSONUtil().toJSONArray(rs);
+			}
+			
+		}
+		
+		return arr;
+	}
+	
+    public JSONArray queryOrderDetailWithOrderNoAndOrderQty(Integer orderNo, Integer orderQty) throws SQLException  {
+		
+		String sql = "select productcode, quantityordered, priceeach from orderdetails where orderNumber = ? and quantityOrdered = ?";	
+		JSONArray arr = new JSONArray();
+
+	    //try with jdbc resources	
+		try (Connection conn =  MySQLAccess.getClassicModelConnection();
+				PreparedStatement pst = conn.prepareStatement(sql)){
+			
+			pst.setInt(1, orderNo);
+			pst.setInt(2, orderQty);
+			
+			try(ResultSet rs = pst.executeQuery()){  //nested try for ResultSet
+				arr = new JSONUtil().toJSONArray(rs);
+			}
+			
+		}
+		
+		return arr;
+	}
+	
+    public boolean insertContactPerson(ContactInfoDTO infoDTO) throws SQLException{
+    	
+    	int row_count = 0;
+    	String sql = "insert into contacts(firstname, lastname, telephone, email) values (?, ?, ?, ?)";
+    	
+    	logger.info("<------------- insertContactPerson method - Begin ----------> ");
+    	
+		try(Connection conn = MySQLAccess.getTestConnection();
+    			PreparedStatement pst = conn.prepareStatement(sql)){
+    		
+    		pst.setString(1, infoDTO.getFirstName());
+    		pst.setString(2, infoDTO.getLastName());
+    		pst.setString(3, infoDTO.getTelephone());
+    		pst.setString(4, infoDTO.getEmail());
+    		
+    		row_count = pst.executeUpdate();
+    	}
+    	
+    	return (row_count > 0);
+    }
 }

@@ -32,4 +32,15 @@ public class V1_inventory {
 		return Response.ok(customerArr.toString()).build();
 	}
 	
+	@Path("/emp")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response returnAllEmployees() throws SQLException{
+		
+		DBAccessor accessor = new DBAccessor();
+		JSONArray customerArr =  accessor.queryAllEmployees();
+		
+		return Response.ok(customerArr.toString()).build();
+	}
+	
 }
